@@ -54,7 +54,7 @@ Menguji waktu respons dan efisiensi penggunaan sumber daya aplikasi.
 | No | Skenario Pengujian | Langkah Pengujian | Hasil yang Diharapkan | Status |
 |----|--------------------|-------------------|-----------------------|--------|
 | PE-01 | Waktu muat halaman pertama (cold start) | Buka aplikasi saat server Render sedang tertidur | Tampil animasi "Membangunkan Server..." selama proses loading | Lolos |
-| PE-02 | Waktu muat halaman setelah server aktif | Refresh halaman setelah server aktif | Halaman dimuat dalam kurang dari 2 detik | Lolos |
+| PE-02 | Waktu muat halaman setelah server aktif | Refresh halaman setelah server aktif | Halaman dimuat dalam kurang dari 2 detik | Gagal |
 | PE-03 | Respons tambah tugas (optimistic UI) | Tambahkan tugas baru dan perhatikan waktu munculnya | Tugas muncul instan di UI sebelum server merespons | Lolos |
 | PE-04 | Respons checkbox (optimistic UI) | Klik checkbox tugas dan perhatikan perubahan visual | Status berubah instan tanpa menunggu respons server | Lolos |
 | PE-05 | Respons hapus tugas (optimistic UI) | Hapus tugas dan perhatikan hilangnya dari daftar | Tugas hilang instan dari UI sebelum server mengonfirmasi | Lolos |
