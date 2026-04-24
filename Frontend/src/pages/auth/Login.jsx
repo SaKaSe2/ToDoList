@@ -31,8 +31,8 @@ const Login = () => {
       setErrorMsg("Format email tidak valid.");
       return;
     }
-    if (formData.password.length < 6) {
-      setErrorMsg("Password minimal 6 karakter.");
+    if (formData.password.length < 8) {
+      setErrorMsg("Kata sandi minimal 8 karakter.");
       return;
     }
 
@@ -88,7 +88,7 @@ const Login = () => {
               value={formData.password}
               onChange={handleChange}
               required
-              placeholder="Minimal 6 karakter"
+              placeholder="Minimal 8 karakter"
               className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
             />
           </div>

@@ -35,10 +35,21 @@ export const AuthProvider = ({ children }) => {
       return { success: true };
     } catch (error) {
       const status = error.response?.status;
+      const data = error.response?.data;
       let msg = 'Terjadi kesalahan. Silakan coba lagi.';
-      if (status === 401) msg = 'Email atau password salah.';
-      else if (status === 422) msg = 'Format email tidak valid.';
-      else if (!error.response) msg = 'Tidak dapat terhubung ke server. Periksa koneksi internet Anda.';
+      
+      if (status === 401 || status === 422) {
+        if (data?.errors) {
+          msg = Object.values(data.errors).flat()[0]; // Ambil pesan error validasi pertama dari Laravel
+        } else if (data?.message) {
+          msg = data.message;
+        } else {
+          msg = 'Email atau kata sandi salah.';
+        }
+      } else if (!error.response) {
+        msg = 'Tidak dapat terhubung ke server. Periksa koneksi internet Anda.';
+      }
+      
       return { success: false, error: msg };
     }
   };
@@ -51,9 +62,21 @@ export const AuthProvider = ({ children }) => {
       return { success: true };
     } catch (error) {
       const status = error.response?.status;
+      const data = error.response?.data;
       let msg = 'Terjadi kesalahan saat mendaftar. Silakan coba lagi.';
-      if (status === 422) msg = 'Email sudah terdaftar atau data tidak valid.';
-      else if (!error.response) msg = 'Tidak dapat terhubung ke server. Periksa koneksi internet Anda.';
+      
+      if (status === 422) {
+        if (data?.errors) {
+          msg = Object.values(data.errors).flat()[0]; // Ambil pesan error validasi spesifik
+        } else if (data?.message) {
+          msg = data.message;
+        } else {
+          msg = 'Data tidak valid atau email sudah terdaftar.';
+        }
+      } else if (!error.response) {
+        msg = 'Tidak dapat terhubung ke server. Periksa koneksi internet Anda.';
+      }
+      
       return { success: false, error: msg };
     }
   };
