@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 400 400" height="400" width="400">
+  
+  <defs>
+    <linearGradient y2="100%" x2="100%" y1="0%" x1="0%" id="bgGrad">
+      <stop stop-color="#0A2540" offset="0%"></stop>
+      <stop stop-color="#13294B" offset="100%"></stop>
+    </linearGradient>
+    
+    
+    <linearGradient y2="100%" x2="100%" y1="0%" x1="0%" id="accentGrad">
+      <stop stop-color="#7ED6FF" offset="0%"></stop>
+      <stop stop-color="#00B4FF" offset="100%"></stop>
+    </linearGradient>
+    
+    
+    <filter height="200%" width="200%" y="-50%" x="-50%" id="glow">
+      <feGaussianBlur result="coloredBlur" stdDeviation="4"></feGaussianBlur>
+      <feMerge>
+        <feMergeNode in="coloredBlur"></feMergeNode>
+        <feMergeNode in="SourceGraphic"></feMergeNode>
+      </feMerge>
+    </filter>
+  </defs>
+
+  
+  <circle stroke-width="20" stroke="#1E3A6B" fill="url(#bgGrad)" r="180" cy="200" cx="200"></circle>
+
+  
+  <circle stroke-width="8" stroke="#1E3A6B" fill="none" r="155" cy="200" cx="200"></circle>
+  <circle opacity="0.15" stroke-width="3" stroke="#7ED6FF" fill="none" r="145" cy="200" cx="200"></circle>
+
+  
+  <rect stroke-width="18" stroke="#1E3A6B" fill="#0F2B52" rx="28" height="210" width="230" y="95" x="85"></rect>
+  
+  
+  <rect fill="#F8FAFC" rx="12" height="170" width="190" y="115" x="105"></rect>
+
+  
+  <text letter-spacing="-1" font-weight="900" font-size="26" font-family="Arial Black, sans-serif" fill="#0A2540" text-anchor="middle" y="150" x="200">NEW</text>
+  <text letter-spacing="-1" font-weight="900" font-size="26" font-family="Arial Black, sans-serif" fill="#00B4FF" text-anchor="middle" y="178" x="200">GEN</text>
+
+  
+  
+  <rect stroke-width="3" stroke="#0A2540" fill="#E2E8F0" rx="4" height="22" width="22" y="200" x="125"></rect>
+  <path stroke-linejoin="round" stroke-linecap="round" stroke-width="4" stroke="#00B4FF" fill="none" d="M130 211 L136 217 L150 200"></path>
+  
+  
+  <rect stroke-width="3" stroke="#0A2540" fill="#E2E8F0" rx="4" height="22" width="22" y="235" x="125"></rect>
+  <path stroke-linejoin="round" stroke-linecap="round" stroke-width="4" stroke="#00B4FF" fill="none" d="M130 246 L136 252 L150 235"></path>
+  
+  
+  <rect stroke-width="3" stroke="#0A2540" fill="#E2E8F0" rx="4" height="22" width="22" y="270" x="125"></rect>
+
+  
+  
+  <line opacity="0.8" stroke-width="3" stroke="#7ED6FF" y2="130" x2="310" y1="130" x1="280"></line>
+  <line opacity="0.8" stroke-width="3" stroke="#7ED6FF" y2="155" x2="310" y1="130" x1="310"></line>
+  <circle filter="url(#glow)" fill="#00B4FF" r="5" cy="130" cx="310"></circle>
+  
+  
+  <line opacity="0.8" stroke-width="3" stroke="#7ED6FF" y2="290" x2="115" y1="290" x1="95"></line>
+  <line opacity="0.8" stroke-width="3" stroke="#7ED6FF" y2="290" x2="95" y1="265" x1="95"></line>
+  <circle filter="url(#glow)" fill="#00B4FF" r="5" cy="290" cx="95"></circle>
+
+  
+  <circle fill="#7ED6FF" r="4" cy="125" cx="125"></circle>
+  <circle fill="#7ED6FF" r="4" cy="125" cx="275"></circle>
+  <circle fill="#7ED6FF" r="4" cy="295" cx="125"></circle>
+  <circle fill="#7ED6FF" r="4" cy="295" cx="275"></circle>
+
+</svg>
