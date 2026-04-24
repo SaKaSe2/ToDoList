@@ -147,6 +147,7 @@ const Tasks = () => {
 
   const [focusSession, setFocusSession] = useState(null);
   const [timeLeft, setTimeLeft] = useState(25 * 60);
+  const [focusLoading, setFocusLoading] = useState(false);
 
   useEffect(() => {
     let interval = null;
@@ -159,6 +160,7 @@ const Tasks = () => {
   }, [focusSession, timeLeft]);
 
   const startFocus = async (task) => {
+    setFocusLoading(true);
     try {
       const res = await api.post('/focus/start', { smart_task_id: task.id });
       setFocusSession({ ...res.data, taskTitle: task.title });
@@ -167,10 +169,12 @@ const Tasks = () => {
     } catch (error) {
       toast.error("Gagal memulai sesi fokus");
     }
+    setFocusLoading(false);
   };
 
   const stopFocus = async () => {
     if (!focusSession) return;
+    setFocusLoading(true);
     try {
       await api.post(`/focus/${focusSession.id}/stop`);
       toast.success("Sesi Fokus disimpan! Cek menu Dashboard.");
@@ -178,6 +182,7 @@ const Tasks = () => {
     } catch (error) {
       toast.error("Gagal menghentikan sesi fokus");
     }
+    setFocusLoading(false);
   };
 
   const formatTime = (secs) => {
@@ -204,8 +209,8 @@ const Tasks = () => {
           <div className="text-5xl font-black text-white tracking-tighter mb-6 font-mono text-center">
             {formatTime(timeLeft)}
           </div>
-          <button onClick={stopFocus} className="w-full bg-white text-slate-900 font-black py-3 rounded-xl hover:bg-slate-100 transition-colors">
-            Hentikan Sesi
+          <button onClick={stopFocus} disabled={focusLoading} className="w-full bg-white text-slate-900 font-black py-3 rounded-xl hover:bg-slate-100 transition-colors disabled:opacity-50">
+            {focusLoading ? <i className="fa-solid fa-spinner animate-spin"></i> : "Hentikan Sesi"}
           </button>
         </div>
       )}
@@ -289,8 +294,8 @@ const Tasks = () => {
                      </button>
                   )}
                   {!task.is_completed && !focusSession && (
-                    <button onClick={() => startFocus(task)} className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 font-black px-4 py-2 rounded-xl transition-colors">
-                      <i className="fa-solid fa-stopwatch mr-1"></i> Fokus
+                    <button onClick={() => startFocus(task)} disabled={focusLoading} className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 font-black px-4 py-2 rounded-xl transition-colors disabled:opacity-50">
+                      {focusLoading ? <i className="fa-solid fa-spinner animate-spin"></i> : <><i className="fa-solid fa-stopwatch mr-1"></i> Fokus</>}
                     </button>
                   )}
                 </div>
