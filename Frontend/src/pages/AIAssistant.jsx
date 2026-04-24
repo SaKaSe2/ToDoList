@@ -15,7 +15,7 @@ const TypewriterTask = ({ task, index }) => {
         }
         return c + 2;
       });
-    }, 10); // Very fast typing
+    }, 10);
     return () => clearInterval(timer);
   }, [fullTextLength]);
 
@@ -50,20 +50,19 @@ const AIAssistant = () => {
   const handleDecompose = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setResult(null); // Clear previous
+    setResult(null);
     
     try {
       const goalRes = await api.post('/goals', { title: goalTitle, description: goalDesc });
       const decompRes = await api.post(`/goals/${goalRes.data.id}/decompose`);
       
-      // Delay slightly for effect
       setTimeout(() => {
         setResult(decompRes.data.new_tasks);
-        toast.success("Goal successfully broken down!");
+        toast.success("Tujuan berhasil dipecah menjadi tugas kecil!");
       }, 500);
       
     } catch (error) {
-      toast.error("Failed to process with AI");
+      toast.error("Gagal memproses dengan AI");
     }
     
     setLoading(false);
@@ -71,38 +70,38 @@ const AIAssistant = () => {
 
   return (
     <div className="space-y-6 pb-12">
-      <h1 className="text-2xl font-black text-slate-800">AI Goal Assistant</h1>
+      <h1 className="text-2xl font-black text-slate-800">Asisten AI</h1>
       
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
         <form onSubmit={handleDecompose} className="space-y-4">
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-1">Big Goal</label>
+            <label className="block text-sm font-bold text-slate-700 mb-1">Tujuan Besar Anda</label>
             <input
               type="text"
               value={goalTitle}
               onChange={(e) => setGoalTitle(e.target.value)}
-              placeholder="e.g. Build a Web Application"
+              placeholder="Contoh: Membuat Aplikasi Skripsi"
               className="w-full border border-slate-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-100 outline-none rounded-xl px-4 py-2 transition-all"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-1">Context / Details</label>
+            <label className="block text-sm font-bold text-slate-700 mb-1">Konteks / Detail (Opsional)</label>
             <textarea
               value={goalDesc}
               onChange={(e) => setGoalDesc(e.target.value)}
-              placeholder="Provide any context for the AI..."
+              placeholder="Berikan konteks agar AI lebih memahami tujuan Anda..."
               className="w-full border border-slate-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-100 outline-none rounded-xl px-4 py-2 h-24 transition-all"
             ></textarea>
           </div>
           <button type="submit" disabled={loading} className="bg-purple-600 text-white font-black py-3 px-8 rounded-xl disabled:opacity-50 transition-all hover:bg-purple-700 hover:shadow-lg hover:shadow-purple-200 hover:-translate-y-0.5">
             {loading ? (
               <span className="flex items-center gap-2">
-                <i className="fa-solid fa-spinner animate-spin"></i> AI is thinking...
+                <i className="fa-solid fa-spinner animate-spin"></i> Sedang Memproses...
               </span>
             ) : (
               <span className="flex items-center gap-2">
-                <i className="fa-solid fa-wand-magic-sparkles"></i> Break it Down
+                <i className="fa-solid fa-wand-magic-sparkles"></i> Pecah Menjadi Tugas Kecil
               </span>
             )}
           </button>
@@ -111,14 +110,21 @@ const AIAssistant = () => {
 
       {loading && (
         <div className="bg-purple-50 p-6 rounded-2xl border border-purple-100 animate-pulse">
-          <div className="h-6 bg-purple-200 rounded w-1/3 mb-6"></div>
-          <div className="space-y-3">
+          <div className="flex flex-col items-center justify-center py-6 mb-6 border-b border-purple-100/50">
+            <i className="fa-solid fa-microchip text-3xl text-purple-300 mb-4 animate-bounce"></i>
+            <h3 className="font-bold text-purple-800 text-lg">AI Sedang Berpikir...</h3>
+            <p className="text-purple-600/70 text-sm mt-1 text-center max-w-md">
+              Harap tunggu, kami sedang menyinkronkan dengan server LLaMA-3. Proses ini mungkin memakan waktu hingga 1 menit jika server sedang tertidur.
+            </p>
+          </div>
+          
+          <div className="space-y-3 mt-6">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white p-4 rounded-lg shadow-sm flex items-center">
+              <div key={i} className="bg-white p-4 rounded-lg shadow-sm flex items-center border border-purple-50">
                 <div className="w-8 h-8 rounded-full bg-purple-200 mr-3 shrink-0"></div>
                 <div className="w-full space-y-2">
-                  <div className="h-4 bg-slate-200 rounded w-2/3"></div>
-                  <div className="h-3 bg-slate-100 rounded w-full"></div>
+                  <div className="h-4 bg-purple-100 rounded w-2/3"></div>
+                  <div className="h-3 bg-slate-50 rounded w-full"></div>
                 </div>
               </div>
             ))}
@@ -132,7 +138,7 @@ const AIAssistant = () => {
             <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-purple-200">
               <i className="fa-solid fa-robot"></i>
             </div>
-            <h2 className="text-xl font-black text-purple-900">Action Plan Ready</h2>
+            <h2 className="text-xl font-black text-purple-900">Rencana Aksi AI Siap</h2>
           </div>
           <div className="space-y-3">
             {result.map((task, idx) => (

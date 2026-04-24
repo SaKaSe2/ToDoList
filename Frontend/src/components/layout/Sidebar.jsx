@@ -4,8 +4,8 @@ import logoSvg from "../../assets/logo.svg";
 const Sidebar = () => {
   const menuItems = [
     { title: "Dashboard", icon: "fa-chart-pie", path: "/dashboard" },
-    { title: "Smart Tasks", icon: "fa-list-check", path: "/tasks" },
-    { title: "AI Assistant", icon: "fa-robot", path: "/ai-assistant" },
+    { title: "Tugas Pintar", icon: "fa-list-check", path: "/tasks" },
+    { title: "Asisten AI", icon: "fa-robot", path: "/ai-assistant" },
   ];
 
   return (
