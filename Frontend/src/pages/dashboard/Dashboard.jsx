@@ -44,9 +44,6 @@ const Dashboard = () => {
         <div className="bg-blue-50 p-6 rounded-2xl border border-blue-100 flex flex-col items-center justify-center py-10 animate-pulse">
           <i className="fa-solid fa-server text-3xl text-blue-300 mb-4 animate-bounce"></i>
           <h3 className="font-bold text-blue-800 text-lg">Membangunkan Server...</h3>
-          <p className="text-blue-600/70 text-sm mt-1 text-center max-w-md">
-            Sedang mengambil data analitik Anda. Mohon tunggu, server Render sedang diaktifkan.
-          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

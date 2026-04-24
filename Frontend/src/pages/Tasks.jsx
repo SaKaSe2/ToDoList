@@ -239,9 +239,6 @@ const Tasks = () => {
           <div className="bg-blue-50 p-6 rounded-2xl border border-blue-100 flex flex-col items-center justify-center py-10 animate-pulse">
             <i className="fa-solid fa-server text-3xl text-blue-300 mb-4 animate-bounce"></i>
             <h3 className="font-bold text-blue-800 text-lg">Membangunkan Server...</h3>
-            <p className="text-blue-600/70 text-sm mt-1 text-center max-w-md">
-              Harap tunggu sebentar, kami sedang menyinkronkan data Anda. Server gratisan (Render) butuh waktu sekitar 1 menit untuk aktif kembali jika sedang tertidur.
-            </p>
           </div>
         ) : (
           <>

@@ -113,9 +113,6 @@ const AIAssistant = () => {
           <div className="flex flex-col items-center justify-center py-6 mb-6 border-b border-purple-100/50">
             <i className="fa-solid fa-microchip text-3xl text-purple-300 mb-4 animate-bounce"></i>
             <h3 className="font-bold text-purple-800 text-lg">AI Sedang Berpikir...</h3>
-            <p className="text-purple-600/70 text-sm mt-1 text-center max-w-md">
-              Harap tunggu, kami sedang menyinkronkan dengan server LLaMA-3. Proses ini mungkin memakan waktu hingga 1 menit jika server sedang tertidur.
-            </p>
           </div>
           
           <div className="space-y-3 mt-6">
