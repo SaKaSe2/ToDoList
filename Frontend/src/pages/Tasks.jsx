@@ -36,22 +36,32 @@ const Tasks = () => {
   const checkLocationReminders = (taskData) => {
     if (!navigator.geolocation) return;
     
-    navigator.geolocation.watchPosition((position) => {
-      const { latitude, longitude } = position.coords;
-      
-      taskData.forEach(task => {
-        if (!task.is_completed && task.latitude && task.longitude) {
-          const dist = calculateDistance(latitude, longitude, task.latitude, task.longitude);
-          if (dist <= (task.location_radius_meters || 100)) {
-            if (Notification.permission === "granted") {
-              new Notification("Tugas di Dekat Anda!", { body: `Anda berada di dekat: ${task.title}` });
-            } else if (Notification.permission !== "denied") {
-              Notification.requestPermission();
+    navigator.geolocation.watchPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        
+        taskData.forEach(task => {
+          if (!task.is_completed && task.latitude && task.longitude) {
+            const dist = calculateDistance(latitude, longitude, task.latitude, task.longitude);
+            if (dist <= (task.location_radius_meters || 100)) {
+              // Cek apakah browser mendukung Notification API
+              if (typeof Notification !== 'undefined') {
+                if (Notification.permission === "granted") {
+                  new Notification("Tugas di Dekat Anda!", { body: `Anda berada di dekat: ${task.title}` });
+                } else if (Notification.permission !== "denied") {
+                  Notification.requestPermission();
+                }
+              }
             }
           }
-        }
-      });
-    });
+        });
+      },
+      (error) => {
+        // Fallback jika user menolak akses lokasi atau browser tidak mendukung
+        console.warn("Geolocation tidak tersedia:", error.message);
+      },
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
+    );
   };
 
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
