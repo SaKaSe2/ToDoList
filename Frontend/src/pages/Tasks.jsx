@@ -130,6 +130,21 @@ const Tasks = () => {
     }
   };
 
+  const deleteTask = async (taskId) => {
+    if (!window.confirm("Yakin ingin menghapus tugas ini?")) return;
+    
+    const previousTasks = [...tasks];
+    setTasks(prev => prev.filter(t => t.id !== taskId));
+    
+    try {
+      await api.delete(`/tasks/${taskId}`);
+      toast.success("Tugas berhasil dihapus!");
+    } catch (error) {
+      toast.error("Gagal menghapus tugas");
+      setTasks(previousTasks);
+    }
+  };
+
   const [focusSession, setFocusSession] = useState(null);
   const [timeLeft, setTimeLeft] = useState(25 * 60);
 
@@ -264,7 +279,10 @@ const Tasks = () => {
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <button onClick={() => deleteTask(task.id)} className="text-xs bg-red-50 hover:bg-red-100 text-red-500 font-black w-8 h-8 rounded-xl transition-colors flex items-center justify-center" title="Hapus Tugas">
+                    <i className="fa-solid fa-trash-can"></i>
+                  </button>
                   {task.scheduled_at && new Date(task.scheduled_at) < new Date() && !task.is_completed && (
                      <button onClick={() => smartReschedule(task.id)} className="text-xs bg-amber-100 hover:bg-amber-200 text-amber-700 font-black px-4 py-2 rounded-xl transition-colors">
                        Jadwalkan Ulang

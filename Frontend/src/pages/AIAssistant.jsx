@@ -45,6 +45,7 @@ const AIAssistant = () => {
   const [goalTitle, setGoalTitle] = useState("");
   const [goalDesc, setGoalDesc] = useState("");
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [result, setResult] = useState(null);
 
   const handleDecompose = async (e) => {
@@ -66,6 +67,30 @@ const AIAssistant = () => {
     }
     
     setLoading(false);
+  };
+
+  const saveAllTasks = async () => {
+    if (!result || result.length === 0) return;
+    setSaving(true);
+    
+    try {
+      await Promise.all(result.map(task => 
+        api.post('/tasks', {
+          title: task.title,
+          description: task.description,
+          is_ai_generated: true,
+          scheduled_at: null
+        })
+      ));
+      
+      toast.success("Semua tugas berhasil disimpan ke Tugas Pintar!");
+      setResult(null);
+      setGoalTitle("");
+      setGoalDesc("");
+    } catch (error) {
+      toast.error("Gagal menyimpan tugas");
+    }
+    setSaving(false);
   };
 
   return (
@@ -141,6 +166,24 @@ const AIAssistant = () => {
             {result.map((task, idx) => (
               <TypewriterTask key={idx} task={task} index={idx} />
             ))}
+          </div>
+          
+          <div className="mt-8 pt-6 border-t border-purple-200/50 text-center">
+            <button 
+              onClick={saveAllTasks} 
+              disabled={saving}
+              className="bg-purple-600 text-white font-black py-3 px-8 rounded-xl shadow-lg shadow-purple-200 transition-all hover:bg-purple-700 hover:shadow-none hover:translate-y-0.5 disabled:opacity-50"
+            >
+              {saving ? (
+                <span className="flex items-center justify-center gap-2">
+                  <i className="fa-solid fa-spinner animate-spin"></i> Sedang Menyimpan...
+                </span>
+              ) : (
+                <span className="flex items-center justify-center gap-2">
+                  <i className="fa-solid fa-floppy-disk"></i> Simpan Semua ke Tugas Pintar
+                </span>
+              )}
+            </button>
           </div>
         </div>
       )}

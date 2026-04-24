@@ -2,23 +2,13 @@ import { useState, useEffect } from "react";
 import api from "../../api/axios";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
-// Mock data to make the dashboard look complex and populated
-const weeklyData = [
-  { day: 'Sen', focusMinutes: 45, completedTasks: 3 },
-  { day: 'Sel', focusMinutes: 120, completedTasks: 7 },
-  { day: 'Rab', focusMinutes: 90, completedTasks: 5 },
-  { day: 'Kam', focusMinutes: 150, completedTasks: 8 },
-  { day: 'Jum', focusMinutes: 60, completedTasks: 4 },
-  { day: 'Sab', focusMinutes: 0, completedTasks: 0 },
-  { day: 'Min', focusMinutes: 30, completedTasks: 2 },
-];
-
 const Dashboard = () => {
   const [stats, setStats] = useState({
     total_focus_minutes: 0,
     completed_tasks: 0,
     total_tasks: 0,
-    completion_rate: 0
+    completion_rate: 0,
+    weekly_data: []
   });
   const [loading, setLoading] = useState(true);
 
@@ -93,7 +83,7 @@ const Dashboard = () => {
         </div>
         <div className="h-80 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={weeklyData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+            <BarChart data={stats.weekly_data} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
               <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dy={10} />
               <YAxis yAxisId="left" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />

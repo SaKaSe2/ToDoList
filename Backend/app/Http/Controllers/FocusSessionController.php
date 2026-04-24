@@ -45,11 +45,44 @@ class FocusSessionController extends Controller
         $completedTasks = $tasks->where('is_completed', true)->count();
         $completionRate = $tasks->count() > 0 ? round(($completedTasks / $tasks->count()) * 100) : 0;
 
+        // Generate weekly data for the last 7 days
+        $weeklyData = [];
+        $indonesianDays = [
+            'Mon' => 'Sen',
+            'Tue' => 'Sel',
+            'Wed' => 'Rab',
+            'Thu' => 'Kam',
+            'Fri' => 'Jum',
+            'Sat' => 'Sab',
+            'Sun' => 'Min',
+        ];
+
+        for ($i = 6; $i >= 0; $i--) {
+            $date = Carbon::now()->subDays($i);
+            $dayName = $indonesianDays[$date->format('D')];
+            $dateString = $date->format('Y-m-d');
+
+            $dayFocusMinutes = $sessions->filter(function($session) use ($dateString) {
+                return Carbon::parse($session->started_at)->format('Y-m-d') === $dateString;
+            })->sum('duration_minutes');
+
+            $dayCompletedTasks = $tasks->filter(function($task) use ($dateString) {
+                return $task->is_completed && Carbon::parse($task->updated_at)->format('Y-m-d') === $dateString;
+            })->count();
+
+            $weeklyData[] = [
+                'day' => $dayName,
+                'focusMinutes' => $dayFocusMinutes,
+                'completedTasks' => $dayCompletedTasks
+            ];
+        }
+
         return response()->json([
             'total_focus_minutes' => $totalMinutes,
             'completed_tasks' => $completedTasks,
             'total_tasks' => $tasks->count(),
-            'completion_rate' => $completionRate
+            'completion_rate' => $completionRate,
+            'weekly_data' => $weeklyData
         ]);
     }
 }
