@@ -12,6 +12,7 @@ const Register = () => {
     password_confirmation: "",
   });
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const { register } = useAuth();
   const navigate = useNavigate();
 
@@ -20,17 +21,32 @@ const Register = () => {
       ...formData,
       [e.target.name]: e.target.value,
     });
+    setErrorMsg("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setErrorMsg("");
 
-    if (formData.password !== formData.password_confirmation) {
-        toast.error("Password tidak cocok!");
-        setLoading(false);
-        return;
+    // Validasi frontend
+    if (formData.name.trim().length < 2) {
+      setErrorMsg("Nama lengkap minimal 2 karakter.");
+      return;
     }
+    if (!formData.email.includes("@")) {
+      setErrorMsg("Format email tidak valid.");
+      return;
+    }
+    if (formData.password.length < 6) {
+      setErrorMsg("Kata sandi minimal 6 karakter.");
+      return;
+    }
+    if (formData.password !== formData.password_confirmation) {
+      setErrorMsg("Kata sandi dan konfirmasi tidak cocok.");
+      return;
+    }
+
+    setLoading(true);
 
     const res = await register(
       formData.name,
@@ -40,9 +56,10 @@ const Register = () => {
     );
 
     if (res.success) {
-      toast.success("Registrasi berhasil!");
+      toast.success("Registrasi berhasil! Selamat datang di NewGen To-Do.");
       navigate("/dashboard");
     } else {
+      setErrorMsg(res.error);
       toast.error(res.error);
     }
     setLoading(false);
@@ -57,6 +74,13 @@ const Register = () => {
           <p className="text-slate-500 font-medium">Buat akun baru</p>
         </div>
 
+        {errorMsg && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl flex items-center gap-2">
+            <i className="fa-solid fa-circle-exclamation text-red-500 shrink-0"></i>
+            <p className="text-sm font-medium text-red-700">{errorMsg}</p>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-bold text-slate-700 mb-1">Nama Lengkap</label>
@@ -66,6 +90,7 @@ const Register = () => {
               value={formData.name}
               onChange={handleChange}
               required
+              placeholder="Masukkan nama lengkap Anda"
               className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
             />
           </div>
@@ -78,30 +103,33 @@ const Register = () => {
               value={formData.email}
               onChange={handleChange}
               required
+              placeholder="contoh@email.com"
               className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-1">Password</label>
+            <label className="block text-sm font-bold text-slate-700 mb-1">Kata Sandi</label>
             <input
               type="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
               required
+              placeholder="Minimal 6 karakter"
               className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-1">Konfirmasi Password</label>
+            <label className="block text-sm font-bold text-slate-700 mb-1">Konfirmasi Kata Sandi</label>
             <input
               type="password"
               name="password_confirmation"
               value={formData.password_confirmation}
               onChange={handleChange}
               required
+              placeholder="Ketik ulang kata sandi"
               className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
             />
           </div>
@@ -111,7 +139,11 @@ const Register = () => {
             disabled={loading}
             className="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-xl hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all disabled:opacity-50"
           >
-            {loading ? "Mendaftar..." : "Daftar Sekarang"}
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <i className="fa-solid fa-spinner animate-spin"></i> Sedang Mendaftar...
+              </span>
+            ) : "Daftar Sekarang"}
           </button>
         </form>
 
