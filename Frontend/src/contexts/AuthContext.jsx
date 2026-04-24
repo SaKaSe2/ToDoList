@@ -34,7 +34,12 @@ export const AuthProvider = ({ children }) => {
       setUser(response.data.user);
       return { success: true };
     } catch (error) {
-      return { success: false, error: error.response?.data?.message || 'Login failed' };
+      const status = error.response?.status;
+      let msg = 'Terjadi kesalahan. Silakan coba lagi.';
+      if (status === 401) msg = 'Email atau password salah.';
+      else if (status === 422) msg = 'Format email tidak valid.';
+      else if (!error.response) msg = 'Tidak dapat terhubung ke server. Periksa koneksi internet Anda.';
+      return { success: false, error: msg };
     }
   };
 
@@ -45,7 +50,11 @@ export const AuthProvider = ({ children }) => {
       setUser(response.data.user);
       return { success: true };
     } catch (error) {
-       return { success: false, error: error.response?.data?.message || 'Registration failed' };
+      const status = error.response?.status;
+      let msg = 'Terjadi kesalahan saat mendaftar. Silakan coba lagi.';
+      if (status === 422) msg = 'Email sudah terdaftar atau data tidak valid.';
+      else if (!error.response) msg = 'Tidak dapat terhubung ke server. Periksa koneksi internet Anda.';
+      return { success: false, error: msg };
     }
   };
 

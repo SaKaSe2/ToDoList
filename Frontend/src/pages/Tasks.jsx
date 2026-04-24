@@ -9,6 +9,7 @@ const Tasks = () => {
   const [useLocation, setUseLocation] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
+  const [processingIds, setProcessingIds] = useState(new Set());
 
   useEffect(() => {
     fetchTasks();
@@ -104,17 +105,23 @@ const Tasks = () => {
   };
 
   const toggleComplete = async (task) => {
+    if (processingIds.has(task.id)) return;
+    setProcessingIds(prev => new Set(prev).add(task.id));
     setTasks(prev => prev.map(t => t.id === task.id ? { ...t, is_completed: !t.is_completed } : t));
     
     try {
       await api.put(`/tasks/${task.id}`, { is_completed: !task.is_completed });
     } catch (error) {
-      toast.error("Gagal mengubah status");
+      toast.error("Gagal mengubah status tugas. Periksa koneksi Anda.");
       fetchTasks();
+    } finally {
+      setProcessingIds(prev => { const s = new Set(prev); s.delete(task.id); return s; });
     }
   };
 
   const smartReschedule = async (taskId) => {
+    if (processingIds.has(taskId)) return;
+    setProcessingIds(prev => new Set(prev).add(taskId));
     const newDate = new Date();
     newDate.setHours(newDate.getHours() + 2);
     
@@ -125,13 +132,17 @@ const Tasks = () => {
       toast.success("Berhasil dijadwalkan ulang (+2 jam)!");
       fetchTasks();
     } catch (error) {
-      toast.error("Gagal menjadwalkan ulang");
+      toast.error("Gagal menjadwalkan ulang. Server mungkin sedang tidak aktif.");
       fetchTasks();
+    } finally {
+      setProcessingIds(prev => { const s = new Set(prev); s.delete(taskId); return s; });
     }
   };
 
   const deleteTask = async (taskId) => {
+    if (processingIds.has(taskId)) return;
     if (!window.confirm("Yakin ingin menghapus tugas ini?")) return;
+    setProcessingIds(prev => new Set(prev).add(taskId));
     
     const previousTasks = [...tasks];
     setTasks(prev => prev.filter(t => t.id !== taskId));
@@ -140,8 +151,10 @@ const Tasks = () => {
       await api.delete(`/tasks/${taskId}`);
       toast.success("Tugas berhasil dihapus!");
     } catch (error) {
-      toast.error("Gagal menghapus tugas");
+      toast.error("Gagal menghapus tugas. Silakan coba lagi.");
       setTasks(previousTasks);
+    } finally {
+      setProcessingIds(prev => { const s = new Set(prev); s.delete(taskId); return s; });
     }
   };
 
@@ -249,7 +262,7 @@ const Tasks = () => {
             <label htmlFor="geo" className="text-sm font-medium text-slate-600">Gunakan lokasi</label>
           </div>
           <button type="submit" disabled={loading} className="bg-blue-600 text-white px-8 py-2 rounded-xl font-black shadow-lg shadow-blue-200 hover:shadow-none hover:translate-y-0.5 transition-all disabled:opacity-50">
-            {loading ? "..." : "Tambah"}
+            {loading ? <><i className="fa-solid fa-spinner animate-spin mr-1"></i> Menambahkan...</> : "Tambah"}
           </button>
         </form>
       </div>
@@ -285,12 +298,12 @@ const Tasks = () => {
                 </div>
                 
                 <div className="flex items-center gap-2">
-                  <button onClick={() => deleteTask(task.id)} className="text-xs bg-red-50 hover:bg-red-100 text-red-500 font-black w-8 h-8 rounded-xl transition-colors flex items-center justify-center" title="Hapus Tugas">
-                    <i className="fa-solid fa-trash-can"></i>
+                  <button onClick={() => deleteTask(task.id)} disabled={processingIds.has(task.id)} className="text-xs bg-red-50 hover:bg-red-100 text-red-500 font-black w-8 h-8 rounded-xl transition-colors flex items-center justify-center disabled:opacity-50" title="Hapus Tugas">
+                    <i className={`fa-solid ${processingIds.has(task.id) ? 'fa-spinner animate-spin' : 'fa-trash-can'}`}></i>
                   </button>
                   {task.scheduled_at && new Date(task.scheduled_at) < new Date() && !task.is_completed && (
-                     <button onClick={() => smartReschedule(task.id)} className="text-xs bg-amber-100 hover:bg-amber-200 text-amber-700 font-black px-4 py-2 rounded-xl transition-colors">
-                       Jadwalkan Ulang
+                     <button onClick={() => smartReschedule(task.id)} disabled={processingIds.has(task.id)} className="text-xs bg-amber-100 hover:bg-amber-200 text-amber-700 font-black px-4 py-2 rounded-xl transition-colors disabled:opacity-50">
+                       {processingIds.has(task.id) ? <i className="fa-solid fa-spinner animate-spin"></i> : "Jadwalkan Ulang"}
                      </button>
                   )}
                   {!task.is_completed && !focusSession && (

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../../api/axios";
+import toast from "react-hot-toast";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
 const Dashboard = () => {
@@ -11,14 +12,17 @@ const Dashboard = () => {
     weekly_data: []
   });
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(false);
 
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
         const response = await api.get('/analytics');
         setStats(response.data);
+        setFetchError(false);
       } catch (error) {
-        console.error("Gagal mengambil analitik");
+        setFetchError(true);
+        toast.error("Gagal memuat data analitik. Server mungkin sedang tidak aktif.");
       } finally {
         setLoading(false);
       }
@@ -45,6 +49,25 @@ const Dashboard = () => {
           ))}
         </div>
         <div className="h-80 bg-white rounded-2xl shadow-sm border border-slate-100 animate-pulse mt-6"></div>
+      </div>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-2xl font-black text-slate-800">Analitik Produktivitas</h1>
+        <div className="bg-red-50 p-6 rounded-2xl border border-red-100 flex flex-col items-center justify-center py-10">
+          <i className="fa-solid fa-triangle-exclamation text-3xl text-red-300 mb-4"></i>
+          <h3 className="font-bold text-red-800 text-lg">Gagal Memuat Data</h3>
+          <p className="text-red-600/70 text-sm mt-1 text-center">Server tidak merespons. Silakan coba lagi.</p>
+          <button 
+            onClick={() => { setLoading(true); setFetchError(false); window.location.reload(); }}
+            className="mt-4 bg-red-600 text-white font-bold px-6 py-2 rounded-xl hover:bg-red-700 transition-colors"
+          >
+            <i className="fa-solid fa-rotate-right mr-2"></i>Coba Lagi
+          </button>
+        </div>
       </div>
     );
   }

@@ -63,7 +63,13 @@ const AIAssistant = () => {
       }, 500);
       
     } catch (error) {
-      toast.error("Gagal memproses dengan AI");
+      if (!error.response) {
+        toast.error("Tidak dapat terhubung ke server AI. Periksa koneksi internet Anda.");
+      } else if (error.response.status === 500) {
+        toast.error("Server AI sedang bermasalah. Silakan coba lagi dalam beberapa saat.");
+      } else {
+        toast.error("Gagal memproses tujuan Anda. Silakan coba lagi.");
+      }
     }
     
     setLoading(false);
@@ -88,7 +94,11 @@ const AIAssistant = () => {
       setGoalTitle("");
       setGoalDesc("");
     } catch (error) {
-      toast.error("Gagal menyimpan tugas");
+      if (!error.response) {
+        toast.error("Koneksi terputus saat menyimpan. Periksa internet Anda.");
+      } else {
+        toast.error("Gagal menyimpan sebagian tugas. Silakan coba lagi.");
+      }
     }
     setSaving(false);
   };
