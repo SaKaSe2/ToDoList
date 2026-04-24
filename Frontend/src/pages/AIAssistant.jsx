@@ -1,6 +1,45 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import api from "../api/axios";
 import toast from "react-hot-toast";
+
+const TypewriterTask = ({ task, index }) => {
+  const [visibleChars, setVisibleChars] = useState(0);
+  const fullTextLength = task.title.length + task.description.length;
+  
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setVisibleChars(c => {
+        if (c >= fullTextLength) {
+          clearInterval(timer);
+          return c;
+        }
+        return c + 2;
+      });
+    }, 10); // Very fast typing
+    return () => clearInterval(timer);
+  }, [fullTextLength]);
+
+  const titleChars = Math.min(visibleChars, task.title.length);
+  const descChars = Math.max(0, visibleChars - task.title.length);
+
+  return (
+    <div className="bg-white p-4 rounded-xl flex items-start shadow-sm animate-fade-in border border-slate-100 hover:border-purple-200 transition-colors">
+      <div className="w-8 h-8 rounded-full bg-purple-100 text-purple-600 font-black flex items-center justify-center mr-4 shrink-0 mt-0.5">
+        {index + 1}
+      </div>
+      <div className="flex-1">
+        <p className="font-bold text-slate-800 text-lg">
+          {task.title.substring(0, titleChars)}
+          {titleChars < task.title.length && <span className="inline-block w-1.5 h-4 bg-purple-400 ml-1 animate-pulse"></span>}
+        </p>
+        <p className="text-sm text-slate-500 mt-1 leading-relaxed">
+          {task.description.substring(0, descChars)}
+          {titleChars >= task.title.length && descChars < task.description.length && <span className="inline-block w-1.5 h-3 bg-slate-400 ml-1 animate-pulse"></span>}
+        </p>
+      </div>
+    </div>
+  );
+};
 
 const AIAssistant = () => {
   const [goalTitle, setGoalTitle] = useState("");
@@ -11,15 +50,18 @@ const AIAssistant = () => {
   const handleDecompose = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setResult(null); // Clear previous
     
     try {
-      // Create Goal
       const goalRes = await api.post('/goals', { title: goalTitle, description: goalDesc });
-      
-      // Decompose it via API
       const decompRes = await api.post(`/goals/${goalRes.data.id}/decompose`);
-      setResult(decompRes.data.new_tasks);
-      toast.success("Goal successfully broken down!");
+      
+      // Delay slightly for effect
+      setTimeout(() => {
+        setResult(decompRes.data.new_tasks);
+        toast.success("Goal successfully broken down!");
+      }, 500);
+      
     } catch (error) {
       toast.error("Failed to process with AI");
     }
@@ -28,7 +70,7 @@ const AIAssistant = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-12">
       <h1 className="text-2xl font-black text-slate-800">AI Goal Assistant</h1>
       
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
@@ -40,7 +82,7 @@ const AIAssistant = () => {
               value={goalTitle}
               onChange={(e) => setGoalTitle(e.target.value)}
               placeholder="e.g. Build a Web Application"
-              className="w-full border border-slate-200 rounded-xl px-4 py-2"
+              className="w-full border border-slate-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-100 outline-none rounded-xl px-4 py-2 transition-all"
               required
             />
           </div>
@@ -50,15 +92,19 @@ const AIAssistant = () => {
               value={goalDesc}
               onChange={(e) => setGoalDesc(e.target.value)}
               placeholder="Provide any context for the AI..."
-              className="w-full border border-slate-200 rounded-xl px-4 py-2 h-24"
+              className="w-full border border-slate-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-100 outline-none rounded-xl px-4 py-2 h-24 transition-all"
             ></textarea>
           </div>
-          <button type="submit" disabled={loading} className="bg-purple-600 text-white font-bold py-2 px-6 rounded-xl disabled:opacity-50 transition-opacity">
+          <button type="submit" disabled={loading} className="bg-purple-600 text-white font-black py-3 px-8 rounded-xl disabled:opacity-50 transition-all hover:bg-purple-700 hover:shadow-lg hover:shadow-purple-200 hover:-translate-y-0.5">
             {loading ? (
               <span className="flex items-center gap-2">
                 <i className="fa-solid fa-spinner animate-spin"></i> AI is thinking...
               </span>
-            ) : "Break it Down"}
+            ) : (
+              <span className="flex items-center gap-2">
+                <i className="fa-solid fa-wand-magic-sparkles"></i> Break it Down
+              </span>
+            )}
           </button>
         </form>
       </div>
@@ -81,19 +127,16 @@ const AIAssistant = () => {
       )}
 
       {!loading && result && (
-        <div className="bg-purple-50 p-6 rounded-2xl border border-purple-100 animate-fade-in">
-          <h2 className="text-lg font-black text-purple-800 mb-4">AI Generated Action Plan</h2>
-          <div className="space-y-2">
+        <div className="bg-purple-50 p-6 rounded-2xl border border-purple-100 animate-fade-in shadow-inner">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-purple-200">
+              <i className="fa-solid fa-robot"></i>
+            </div>
+            <h2 className="text-xl font-black text-purple-900">Action Plan Ready</h2>
+          </div>
+          <div className="space-y-3">
             {result.map((task, idx) => (
-              <div key={idx} className="bg-white p-3 rounded-lg flex items-center shadow-sm">
-                <div className="w-8 h-8 rounded-full bg-purple-100 text-purple-600 font-bold flex items-center justify-center mr-3">
-                  {idx + 1}
-                </div>
-                <div className="flex-1">
-                  <p className="font-bold text-slate-800">{task.title}</p>
-                  <p className="text-xs text-slate-500">{task.description}</p>
-                </div>
-              </div>
+              <TypewriterTask key={idx} task={task} index={idx} />
             ))}
           </div>
         </div>
